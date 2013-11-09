@@ -127,6 +127,14 @@ def fetch_main_content_page(username, pager_name):
         sleep()
 
 
+def friendly_error_msg(error):
+    if isinstance(error, NoPager):
+        print 'Profile page is private (NoPager). Continuing.'
+    elif isinstance(error, urllib2.HTTPError) and error.code == 404:
+        print 'No user/group members discovered on this page (404). Continuing.'
+    else:
+        traceback.print_exc(limit=1)
+
 
 if __name__ == '__main__':
     username = sys.argv[1]
@@ -137,12 +145,12 @@ if __name__ == '__main__':
             try:
                 for content in fetch_content_page(username, category_name):
                     out_file.write(content)
-            except (urllib2.HTTPError, NoPager):
-                traceback.print_exc(limit=1)
+            except (urllib2.HTTPError, NoPager) as error:
+               friendly_error_msg(error)
 
     with open('{}.hyves.txt'.format(filename), 'w') as out_file:
         try:
             for content in fetch_main_content_page(username, 'publicgroups_default_redesign'):
                 out_file.write(content)
-        except (urllib2.HTTPError, NoPager):
-            traceback.print_exc(limit=1)
+        except (urllib2.HTTPError, NoPager) as error:
+            friendly_error_msg(error)
