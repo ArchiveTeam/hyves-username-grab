@@ -60,7 +60,7 @@ def pager(hostname, name, page_number, extra):
 
 def scrape_pager(content):
     '''Scrapes the pager params from html'''
-    match = re.search(r"name: '([^']+)'.+nrPages: ([0-9]+).+extra: '([^']+)'",
+    match = re.search(r"name: '([^']+)'.+?nrPages: ([0-9]+).+?extra: '([^']+)'",
         content, re.DOTALL)
 
     if not match:
