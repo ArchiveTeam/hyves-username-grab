@@ -11,6 +11,10 @@ import urllib2
 user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36'
 
 
+class NoPager(Exception):
+    pass
+
+
 def sleep(seconds=0.75):
     sleep_time = seconds * random.uniform(0.5, 2.0)
     time.sleep(sleep_time)
@@ -57,6 +61,9 @@ def scrape_pager(content):
     '''Scrapes the pager params from html'''
     match = re.search(r"name: '([^']+)'.+nrPages: ([0-9]+).+extra: '([^']+)'",
         content, re.DOTALL)
+
+    if not match:
+        raise NoPager("Pager parameters not found")
 
     name = match.group(1)
     num_pages = match.group(2)
@@ -129,12 +136,12 @@ if __name__ == '__main__':
             try:
                 for content in fetch_content_page(username, category_name):
                     out_file.write(content)
-            except urllib2.HTTPError:
+            except (urllib2.HTTPError, NoPager):
                 traceback.print_exc(limit=1)
 
     with open('{}.hyves.txt'.format(filename), 'w') as out_file:
         try:
             for content in fetch_main_content_page(username, 'publicgroups_default_redesign'):
                 out_file.write(content)
-        except urllib2.HTTPError:
+        except (urllib2.HTTPError, NoPager):
             traceback.print_exc(limit=1)
