@@ -115,16 +115,19 @@ def fetch_main_content_page(username, pager_name):
 
     pager_params = scrape_pager(content)
 
-    yield content
-
-    print 'Pages=', pager_params['num_pages'], 'Name=', pager_name
-
-    for page_num in xrange(1, pager_params['num_pages'] + 1):
-        print 'Page', page_num
-        content = pager('{}.hyves.nl'.format(username), pager_name,
-            page_num, pager_params['extra'])
+    if pager_params['name'] == pager_name:
         yield content
-        sleep()
+
+        print 'Pages=', pager_params['num_pages'], 'Name=', pager_name
+
+        for page_num in xrange(1, pager_params['num_pages'] + 1):
+            print 'Page', page_num
+            content = pager('{}.hyves.nl'.format(username), pager_name,
+                page_num, pager_params['extra'])
+            yield content
+            sleep()
+    else:
+        raise NoPager("Pager parameters not found")
 
 
 def friendly_error_msg(error):
