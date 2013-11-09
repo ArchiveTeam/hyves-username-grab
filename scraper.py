@@ -35,6 +35,7 @@ def pager(hostname, name, page_number, extra):
     }
 
     for dummy in xrange(10):
+        content = ''
         try:
             request = urllib2.Request(url, urllib.urlencode(post_data), headers)
             response = urllib2.urlopen(request)
