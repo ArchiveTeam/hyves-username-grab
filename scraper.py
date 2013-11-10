@@ -99,25 +99,10 @@ def fetch_content_page(username, category_name):
             'User-Agent': user_agent
         }
         url = 'http://{0}.hyves.nl/{1}'.format(username, category_name)
-        try:
-            request = urllib2.Request(url, headers=headers)
-            response = urllib2.urlopen(request)
-            content = response.read()
-        except urllib2.HTTPError as error:
-            status_code = error.code
-            content = ""
-        else:
-            status_code = response.getcode()
+        status_code, content = request_page(url, headers=headers)
 
-        if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
-            sleep_time = 10
-            print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
-            time.sleep(sleep_time)
-            continue # retry
-        elif status_code != 200 and status_code != 404:
-            print 'Unexpected error. (code', status_code, '.) Retrying.'
-            sleep(seconds=5)
-            continue # retry
+      if not check_status(status_code):
+          continue
 
         pager_params = scrape_pager(content)
 
