@@ -77,7 +77,7 @@ def pager(hostname, name, page_number, extra):
 def scrape_pager(content):
     '''Scrapes the pager params from html'''
     match = re.search(r"name: '([^']+)'.+?nrPages: ([0-9]+).+?extra: '([^']+)'",
-        content, re.DOTALL)
+                      content, re.DOTALL)
 
     if not match:
         raise NoPager("Pager parameters not found")
@@ -98,8 +98,8 @@ def fetch_content_page(username, category_name):
         print 'Fetch', username, category_name
 
         url = 'http://{0}.hyves.nl/{1}'.format(username, category_name)
-        status_code, content = request_page(url)
 
+        status_code, content = request_page(url)
         if not check_status(status_code):
             continue
 
@@ -123,12 +123,9 @@ def fetch_main_content_page(username, pager_name):
     while True:
         print 'Fetch', username, pager_name
 
-        headers = {
-            'User-Agent': user_agent
-        }
-        url = 'http://{0}.hyves.nl/'.format(username, category_name)
+        url = 'http://{0}.hyves.nl/'.format(username)
 
-        status_code, content = request_page(url, headers=headers)
+        status_code, content = request_page(url)
         if not check_status(status_code):
             continue
 
