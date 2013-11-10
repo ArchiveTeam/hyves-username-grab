@@ -20,6 +20,35 @@ def sleep(seconds=0.75):
     time.sleep(sleep_time)
 
 
+def request_page(url, post_data=None, headers=None):
+    """Requests and returns a tuple of (status_code, content)"""
+
+    content = ''
+    try:
+        request = urllib2.Request(url, urllib.urlencode(post_data), headers)
+        response = urllib2.urlopen(request)
+        content = response.read()
+    except urllib2.HTTPError as error:
+        status_code = error.code
+    else:
+        status_code = response.getcode()
+    return (status_code, content)
+
+
+def check_status(status_code):
+    """Checks the returned status of the page and returns True or False"""
+    if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
+        sleep_time = 10
+        print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
+        time.sleep(sleep_time)
+    elif status_code != 200:
+        print 'Unexpected error. (code', status_code, '.) Retrying.'
+        sleep(seconds=5)
+    else:
+        return True
+    return False
+
+
 def pager(hostname, name, page_number, extra):
     '''Makes a request to Hyves pager.'''
     url = 'http://{0}/index.php?xmlHttp=1&module=pager&action=showPage&name={1}'\
@@ -35,24 +64,9 @@ def pager(hostname, name, page_number, extra):
     }
 
     for dummy in xrange(10):
-        content = ''
-        try:
-            request = urllib2.Request(url, urllib.urlencode(post_data), headers)
-            response = urllib2.urlopen(request)
-            content = response.read()
-        except urllib2.HTTPError as error:
-            status_code = error.code
-        else:
-            status_code = response.getcode()
+        status_code, content = request_page(url, post_data=post_data, headers=headers)
 
-        if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
-            sleep_time = 10
-            print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
-            time.sleep(sleep_time)
-        elif status_code != 200:
-            print 'Unexpected error. (code', status_code, '.) Retrying.'
-            sleep(seconds=5)
-        else:
+        if check_status(status_code):
             return content
 
     raise Exception('Unable to fetch page')
@@ -94,7 +108,7 @@ def fetch_content_page(username, category_name):
             content = ""
         else:
             status_code = response.getcode()
-        
+
         if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
             sleep_time = 10
             print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
@@ -104,7 +118,7 @@ def fetch_content_page(username, category_name):
             print 'Unexpected error. (code', status_code, '.) Retrying.'
             sleep(seconds=5)
             continue # retry
-        
+
         pager_params = scrape_pager(content)
 
         yield content
@@ -117,7 +131,7 @@ def fetch_content_page(username, category_name):
                 page_num, pager_params['extra'])
             yield content
             sleep()
-        
+
         break # done
 
 
@@ -129,7 +143,7 @@ def fetch_main_content_page(username, pager_name):
             'User-Agent': user_agent
         }
         url = 'http://{0}.hyves.nl/'.format(username, category_name)
-        
+
         try:
             request = urllib2.Request(url, headers=headers)
             response = urllib2.urlopen(request)
@@ -139,7 +153,7 @@ def fetch_main_content_page(username, pager_name):
             content = ""
         else:
             status_code = response.getcode()
-        
+
         if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
             sleep_time = 10
             print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
@@ -165,7 +179,7 @@ def fetch_main_content_page(username, pager_name):
                 sleep()
         else:
             raise NoPager("Pager parameters not found")
-        
+
         break # done
 
 
