@@ -45,7 +45,7 @@ def pager(hostname, name, page_number, extra):
         else:
             status_code = response.getcode()
 
-        if status_code == 403 or 'Try again in a moment' in content:
+        if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
             sleep_time = 10
             print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
             time.sleep(sleep_time)
@@ -78,56 +78,95 @@ def scrape_pager(content):
 
 
 def fetch_content_page(username, category_name):
-    print 'Fetch', username, category_name
+    while True:
+        print 'Fetch', username, category_name
 
-    headers = {
-        'User-Agent': user_agent
-    }
-    url = 'http://{}.hyves.nl/{}'.format(username, category_name)
-    request = urllib2.Request(url, headers=headers)
-    response = urllib2.urlopen(request)
-    content = response.read()
+        headers = {
+            'User-Agent': user_agent
+        }
+        url = 'http://{}.hyves.nl/{}'.format(username, category_name)
+        try:
+            request = urllib2.Request(url, headers=headers)
+            response = urllib2.urlopen(request)
+            content = response.read()
+        except urllib2.HTTPError as error:
+            status_code = error.code
+            content = ""
+        else:
+            status_code = response.getcode()
+        
+        if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
+            sleep_time = 10
+            print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
+            time.sleep(sleep_time)
+            continue # retry
+        elif status_code != 200 and status_code != 404:
+            print 'Unexpected error. (code', status_code, '.) Retrying.'
+            sleep(seconds=5)
+            continue # retry
+        
+        pager_params = scrape_pager(content)
 
-    pager_params = scrape_pager(content)
-
-    yield content
-
-    print 'Pages=', pager_params['num_pages'], 'Name=', pager_params['name']
-
-    for page_num in xrange(1, pager_params['num_pages'] + 1):
-        print 'Page', page_num
-        content = pager('{}.hyves.nl'.format(username), pager_params['name'],
-            page_num, pager_params['extra'])
-        yield content
-        sleep()
-
-
-def fetch_main_content_page(username, pager_name):
-    print 'Fetch', username, pager_name
-
-    headers = {
-        'User-Agent': user_agent
-    }
-    url = 'http://{}.hyves.nl/'.format(username, category_name)
-    request = urllib2.Request(url, headers=headers)
-    response = urllib2.urlopen(request)
-    content = response.read()
-
-    pager_params = scrape_pager(content)
-
-    if pager_params['name'] == pager_name:
         yield content
 
-        print 'Pages=', pager_params['num_pages'], 'Name=', pager_name
+        print 'Pages=', pager_params['num_pages'], 'Name=', pager_params['name']
 
         for page_num in xrange(1, pager_params['num_pages'] + 1):
             print 'Page', page_num
-            content = pager('{}.hyves.nl'.format(username), pager_name,
+            content = pager('{}.hyves.nl'.format(username), pager_params['name'],
                 page_num, pager_params['extra'])
             yield content
             sleep()
-    else:
-        raise NoPager("Pager parameters not found")
+        
+        break # done
+
+
+def fetch_main_content_page(username, pager_name):
+    while True:
+        print 'Fetch', username, pager_name
+
+        headers = {
+            'User-Agent': user_agent
+        }
+        url = 'http://{}.hyves.nl/'.format(username, category_name)
+        
+        try:
+            request = urllib2.Request(url, headers=headers)
+            response = urllib2.urlopen(request)
+            content = response.read()
+        except urllib2.HTTPError as error:
+            status_code = error.code
+            content = ""
+        else:
+            status_code = response.getcode()
+        
+        if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
+            sleep_time = 10
+            print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
+            time.sleep(sleep_time)
+            continue # retry
+        elif status_code != 200 and status_code != 404:
+            print 'Unexpected error. (code', status_code, '.) Retrying.'
+            sleep(seconds=5)
+            continue # retry
+
+        pager_params = scrape_pager(content)
+
+        if pager_params['name'] == pager_name:
+            yield content
+
+            print 'Pages=', pager_params['num_pages'], 'Name=', pager_name
+
+            for page_num in xrange(1, pager_params['num_pages'] + 1):
+                print 'Page', page_num
+                content = pager('{}.hyves.nl'.format(username), pager_name,
+                    page_num, pager_params['extra'])
+                yield content
+                sleep()
+        else:
+            raise NoPager("Pager parameters not found")
+        
+        break # done
 
 
 def friendly_error_msg(error):
