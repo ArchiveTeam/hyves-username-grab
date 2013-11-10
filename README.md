@@ -45,7 +45,7 @@ Distribution-specific setup
     adduser --system --group --shell /bin/bash archiveteam
     apt-get install -y git-core screen python-pip bzip2
     pip install seesaw
-    su -c "cd /home/archiveteam; git clone https://github.com/joepie91/hyves-username-grab.git" archiveteam
+    su -c "cd /home/archiveteam; git clone https://github.com/ArchiveTeam/hyves-username-grab.git" archiveteam
     screen su -c "cd /home/archiveteam/hyves-username-grab/; run-pipeline pipeline.py --concurrent 2 --address '127.0.0.1' YOURNICKHERE" archiveteam
     [... ctrl+A D to detach ...]
     
