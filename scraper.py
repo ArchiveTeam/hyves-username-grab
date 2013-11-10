@@ -22,7 +22,7 @@ def sleep(seconds=0.75):
 
 def pager(hostname, name, page_number, extra):
     '''Makes a request to Hyves pager.'''
-    url = 'http://{}/index.php?xmlHttp=1&module=pager&action=showPage&name={}'\
+    url = 'http://{0}/index.php?xmlHttp=1&module=pager&action=showPage&name={1}'\
         .format(hostname, name)
     post_data = {
         'pageNr': page_number,
@@ -84,7 +84,7 @@ def fetch_content_page(username, category_name):
         headers = {
             'User-Agent': user_agent
         }
-        url = 'http://{}.hyves.nl/{}'.format(username, category_name)
+        url = 'http://{0}.hyves.nl/{1}'.format(username, category_name)
         try:
             request = urllib2.Request(url, headers=headers)
             response = urllib2.urlopen(request)
@@ -113,7 +113,7 @@ def fetch_content_page(username, category_name):
 
         for page_num in xrange(1, pager_params['num_pages'] + 1):
             print 'Page', page_num
-            content = pager('{}.hyves.nl'.format(username), pager_params['name'],
+            content = pager('{0}.hyves.nl'.format(username), pager_params['name'],
                 page_num, pager_params['extra'])
             yield content
             sleep()
@@ -128,7 +128,7 @@ def fetch_main_content_page(username, pager_name):
         headers = {
             'User-Agent': user_agent
         }
-        url = 'http://{}.hyves.nl/'.format(username, category_name)
+        url = 'http://{0}.hyves.nl/'.format(username, category_name)
         
         try:
             request = urllib2.Request(url, headers=headers)
@@ -159,7 +159,7 @@ def fetch_main_content_page(username, pager_name):
 
             for page_num in xrange(1, pager_params['num_pages'] + 1):
                 print 'Page', page_num
-                content = pager('{}.hyves.nl'.format(username), pager_name,
+                content = pager('{0}.hyves.nl'.format(username), pager_name,
                     page_num, pager_params['extra'])
                 yield content
                 sleep()
@@ -183,14 +183,14 @@ if __name__ == '__main__':
     filename = sys.argv[2]
 
     for category_name in ['vrienden', 'leden']:
-        with open('{}.{}.txt'.format(filename, category_name), 'w') as out_file:
+        with open('{0}.{1}.txt'.format(filename, category_name), 'w') as out_file:
             try:
                 for content in fetch_content_page(username, category_name):
                     out_file.write(content)
             except (urllib2.HTTPError, NoPager) as error:
                friendly_error_msg(error)
 
-    with open('{}.hyves.txt'.format(filename), 'w') as out_file:
+    with open('{0}.hyves.txt'.format(filename), 'w') as out_file:
         try:
             for content in fetch_main_content_page(username, 'publicgroups_default_redesign'):
                 out_file.write(content)
