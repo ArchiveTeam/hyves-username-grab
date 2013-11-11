@@ -27,9 +27,13 @@ def request_page(url, post_data=None):
     headers = {
         'User-Agent': user_agent
     }
+    if post_data:
+        post_payload = urllib.urlencode(post_data)
+    else:
+        post_payload = None
     content = ''
     try:
-        request = urllib2.Request(url, urllib.urlencode(post_data), headers)
+        request = urllib2.Request(url, post_payload, headers)
         response = urllib2.urlopen(request)
         content = response.read()
     except urllib2.HTTPError as error:
@@ -39,14 +43,14 @@ def request_page(url, post_data=None):
     return (status_code, content)
 
 
-def check_status(status_code):
+def check_status(status_code, content):
     """Checks the returned status of the page and returns True or False."""
 
     if status_code == 403 or status_code == 500 or 'Try again in a moment' in content:
         sleep_time = 10
         print 'Hyves angered (code', status_code, ') Sleep for', sleep_time, 'seconds.'
         time.sleep(sleep_time)
-    elif status_code != 200:
+    elif status_code not in (200, 404):
         print 'Unexpected error. (code', status_code, '.) Retrying.'
         sleep(seconds=5)
     else:
@@ -68,7 +72,7 @@ def pager(hostname, name, page_number, extra):
     for dummy in xrange(10):
         status_code, content = request_page(url, post_data=post_data)
 
-        if check_status(status_code):
+        if check_status(status_code, content):
             return content
 
     raise Exception('Unable to fetch page')
@@ -100,7 +104,7 @@ def fetch_content_page(username, category_name):
         url = 'http://{0}.hyves.nl/{1}'.format(username, category_name)
 
         status_code, content = request_page(url)
-        if not check_status(status_code):
+        if not check_status(status_code, content):
             continue
 
         pager_params = scrape_pager(content)
@@ -126,7 +130,7 @@ def fetch_main_content_page(username, pager_name):
         url = 'http://{0}.hyves.nl/'.format(username)
 
         status_code, content = request_page(url)
-        if not check_status(status_code):
+        if not check_status(status_code, content):
             continue
 
         pager_params = scrape_pager(content)
