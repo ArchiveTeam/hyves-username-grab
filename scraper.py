@@ -2,11 +2,11 @@
 
 import random
 import re
+import requests
 import sys
 import time
 import traceback
 import urllib
-import urllib2
 
 
 user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36'
@@ -32,14 +32,12 @@ def request_page(url, post_data=None):
     else:
         post_payload = None
     content = ''
-    try:
-        request = urllib2.Request(url, post_payload, headers)
-        response = urllib2.urlopen(request)
-        content = response.read()
-    except urllib2.HTTPError as error:
-        status_code = error.code
+    if post_payload:
+        response = requests.post(url, post_payload, headers=headers)
     else:
-        status_code = response.getcode()
+        response = requests.get(url, headers=headers)
+    content = response.content
+    status_code = response.status_code
     return (status_code, content)
 
 
@@ -170,12 +168,12 @@ if __name__ == '__main__':
             try:
                 for content in fetch_content_page(username, category_name):
                     out_file.write(content)
-            except (urllib2.HTTPError, NoPager) as error:
+            except NoPager as error:
                friendly_error_msg(error)
 
     with open('{0}.hyves.txt'.format(filename), 'w') as out_file:
         try:
             for content in fetch_main_content_page(username, 'publicgroups_default_redesign'):
                 out_file.write(content)
-        except (urllib2.HTTPError, NoPager) as error:
+        except NoPager as error:
             friendly_error_msg(error)

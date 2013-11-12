@@ -22,7 +22,7 @@ Running without a warrior
 
 To run this outside the warrior, clone this repository and run:
 
-    pip install seesaw
+    pip install seesaw requests
 
 then start downloading with:
 
@@ -44,7 +44,7 @@ Distribution-specific setup
 
     adduser --system --group --shell /bin/bash archiveteam
     apt-get install -y git-core screen python-pip bzip2
-    pip install seesaw
+    pip install seesaw requests
     su -c "cd /home/archiveteam; git clone https://github.com/ArchiveTeam/hyves-username-grab.git" archiveteam
     screen su -c "cd /home/archiveteam/hyves-username-grab/; run-pipeline pipeline.py --concurrent 2 --address '127.0.0.1' YOURNICKHERE" archiveteam
     [... ctrl+A D to detach ...]
@@ -54,13 +54,13 @@ Distribution-specific setup
 Ensure that you have the CentOS equivalent of bzip2 installed as well. You might need the EPEL repository to be enabled.
 
     yum -y install python-pip
-    pip install seesaw
+    pip install seesaw requests
     [... pretty much the same as above ...]
 
 ### For openSUSE:
 
     zypper install screen python-pip bzip2 python-devel gcc make
-    pip install seesaw
+    pip install seesaw requests
     [... pretty much the same as above ...]
 
 ### For OS X:
@@ -68,7 +68,7 @@ Ensure that you have the CentOS equivalent of bzip2 installed as well. You might
 You need Homebrew. Ensure that you have the OS X equivalent of bzip2 installed as well.
 
     brew install python
-    pip install seesaw
+    pip install seesaw requests
     [... pretty much the same as above ...]
 
 **There is a known issue with some packaged versions of rsync. If you get errors during the upload stage, hyves-username-grab will not work with your rsync version.**
@@ -82,7 +82,7 @@ This supposedly fixes it:
 Ensure that you have the Arch equivalent of bzip2 installed as well.
 
 1. Make sure you have `python-pip2` installed.
-2. Run `pip2 install seesaw`.
+2. Run `pip2 install seesaw requests`.
 3. Modify the run-pipeline script in seesaw to point at `#!/usr/bin/python2` instead of `#!/usr/bin/python`.
 4. `adduser --system --group --shell /bin/bash archiveteam`
 5. `screen su -c "cd /home/archiveteam/hyves-username-grab/; run-pipeline pipeline.py --concurrent 10 --address '127.0.0.1' YOURNICKHERE" archiveteam`
