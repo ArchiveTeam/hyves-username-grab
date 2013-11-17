@@ -1,6 +1,8 @@
 hyves-username-grab
 ===================
 
+** Phase 1 complete! Please join us on [Phase 2](https://github.com/ArchiveTeam/hyves-grab/). **
+
 More information about the archiving project can be found on the [ArchiveTeam wiki page for the project](http://archiveteam.org/index.php?title=Hyves)!
 
 Setup instructions
