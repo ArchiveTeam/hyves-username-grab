@@ -138,6 +138,7 @@ pipeline = Pipeline(
     GetItemFromTracker("http://%s/%s" % (TRACKER_HOST, TRACKER_ID), downloader,
         VERSION),
     PrepareDirectories(warc_prefix="hyves-username"),
+    print("You might get a better score on the Hyves Content grab."),
     ExternalProcess(
         'Scraper',
         [
