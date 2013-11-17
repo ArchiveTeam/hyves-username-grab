@@ -134,11 +134,20 @@ project = Project(
     , utc_deadline=datetime.datetime(2013, 11, 29, 00, 00, 1)
 )
 
+print ' '
+print ' '
+print '======================================================='
+print '======================================================='
+print 'You might get a better score on the Hyves Content grab.'
+print '======================================================='
+print '======================================================='
+print ' '
+print ' '
+
 pipeline = Pipeline(
     GetItemFromTracker("http://%s/%s" % (TRACKER_HOST, TRACKER_ID), downloader,
         VERSION),
     PrepareDirectories(warc_prefix="hyves-username"),
-    print("You might get a better score on the Hyves Content grab."),
     ExternalProcess(
         'Scraper',
         [
