@@ -69,7 +69,7 @@ seesaw.externalprocess.AsyncPopen = AsyncPopenFixed
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20131109.04"
+VERSION = "20131129.00"
 USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
 TRACKER_ID = 'hyves-uname'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -102,6 +102,7 @@ class PrepareDirectories(SimpleTask):
         open("%(item_dir)s/%(warc_file_base)s.vrienden.txt" % item, "w").close()
         open("%(item_dir)s/%(warc_file_base)s.leden.txt" % item, "w").close()
         open("%(item_dir)s/%(warc_file_base)s.hyves.txt" % item, "w").close()
+        open("%(item_dir)s/%(warc_file_base)s.part2.txt" % item, "w").close()
 
 
 class MoveFiles(SimpleTask):
@@ -115,6 +116,8 @@ class MoveFiles(SimpleTask):
             "%(data_dir)s/%(warc_file_base)s.leden.txt" % item)
         os.rename("%(item_dir)s/%(warc_file_base)s.hyves.txt" % item,
             "%(data_dir)s/%(warc_file_base)s.hyves.txt" % item)
+        os.rename("%(item_dir)s/%(warc_file_base)s.part2.txt" % item,
+            "%(data_dir)s/%(warc_file_base)s.part2.txt" % item)
 
         shutil.rmtree("%(item_dir)s" % item)
 
