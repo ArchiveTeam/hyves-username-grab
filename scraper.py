@@ -169,7 +169,7 @@ def fetch_main_content_page(username, pager_name):
         break # done
 
 
-def fetch_group_page(category, page_start, page_end):
+def fetch_group_page(category, page_start, page_end, search_terms):
     assert page_start <= page_end
 
     while True:
@@ -185,7 +185,8 @@ def fetch_group_page(category, page_start, page_end):
             'X-SitePosition-Current': '|114|hyver|||',
         }
         url = 'http://www.hyves.nl/?module=search&action=search&searchtype=old'
-        post_data = 'searchterms=&searchFor={0}'.format(category)
+        post_data = 'searchterms={1}&searchFor={0}'.format(category,
+            urllib.quote_plus(search_terms))
 
         try:
             request = urllib2.Request(url, post_data, headers=headers)
@@ -256,12 +257,20 @@ if __name__ == '__main__':
             except (urllib2.HTTPError, NoPager) as error:
                 friendly_error_msg(error)
     else:
-        category, page_start, page_end = username.split(',')
+        category, page_start, page_end, search_terms = username.split(',')
+
+        if not page_start:
+            page_start = 1
+
+        if not page_end:
+            page_end = 50
+
         page_start = int(page_start)
         page_end = int(page_end)
         with open('{0}.part2.txt'.format(filename), 'w') as out_file:
             try:
-                for content in fetch_group_page(category, page_start, page_end):
+                for content in fetch_group_page(category, page_start, page_end,
+                search_terms):
                     out_file.write(content)
                     if 'geen resultaten' in content:
                         print 'geen resultaten'
