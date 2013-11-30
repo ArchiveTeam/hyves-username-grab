@@ -176,17 +176,24 @@ def fetch_group_page(category, page_start, page_end):
         print 'Fetch', category, page_start, page_end
 
         headers = {
-            'User-Agent': user_agent
+            'User-Agent': user_agent,
+            'Referer': 'http://www.hyves.nl/search/hyver/',
+            'X-Hyves-Multipart-Boundary': 'id_22e86',
+            'X-Prototype-Version': '1.7',
+            'X-Redesign-Phase': '1',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-SitePosition-Current': '|114|hyver|||',
         }
-        url = 'http://www.hyves.nl/{0}/'.format(category)
+        url = 'http://www.hyves.nl/?module=search&action=search&searchtype=old'
+        post_data = 'searchterms=&searchFor={0}'.format(category)
 
         try:
-            request = urllib2.Request(url, headers=headers)
+            request = urllib2.Request(url, post_data, headers=headers)
             response = urllib2.urlopen(request)
             content = response.read()
         except urllib2.HTTPError as error:
             status_code = error.code
-            content = ""
+            content = error.read()
         else:
             status_code = response.getcode()
 
