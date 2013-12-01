@@ -208,12 +208,17 @@ def fetch_group_page(category, page_start, page_end, search_terms):
             sleep(seconds=5)
             continue  # retry
 
-        pager_params = scrape_pager(content)
+        yield content
+
+        try:
+            pager_params = scrape_pager(content)
+        except NoPager:
+            print 'No pager params, ok.'
+            break
 
         if 'name' in pager_params:
             pager_name = pager_params['name']
             print 'Name=', pager_name
-            yield content
 
             for page_num in xrange(page_start, page_end + 1):
                 print 'Page', page_num
@@ -221,8 +226,6 @@ def fetch_group_page(category, page_start, page_end, search_terms):
                     page_num, pager_params['extra'])
                 yield content
                 sleep()
-        else:
-            raise NoPager("Pager parameters not found")
 
         break  # done
 
