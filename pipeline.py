@@ -69,7 +69,7 @@ seesaw.externalprocess.AsyncPopen = AsyncPopenFixed
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20131130.00"
+VERSION = "20131130.01"
 USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
 TRACKER_ID = 'hyves-uname'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -155,7 +155,8 @@ pipeline = Pipeline(
             "data": [ 
                 ItemInterpolation("%(item_dir)s/%(warc_file_base)s.vrienden.txt"),
                 ItemInterpolation("%(item_dir)s/%(warc_file_base)s.leden.txt"),
-                ItemInterpolation("%(item_dir)s/%(warc_file_base)s.hyves.txt")
+                ItemInterpolation("%(item_dir)s/%(warc_file_base)s.hyves.txt"),
+                ItemInterpolation("%(item_dir)s/%(warc_file_base)s.part2.txt")
             ]
         }
     ),
@@ -170,7 +171,8 @@ pipeline = Pipeline(
             files=[
                 ItemInterpolation("%(data_dir)s/%(warc_file_base)s.vrienden.txt"),
                 ItemInterpolation("%(data_dir)s/%(warc_file_base)s.leden.txt"),
-                ItemInterpolation("%(data_dir)s/%(warc_file_base)s.hyves.txt")
+                ItemInterpolation("%(data_dir)s/%(warc_file_base)s.hyves.txt"),
+                ItemInterpolation("%(data_dir)s/%(warc_file_base)s.part2.txt"),
             ],
             rsync_target_source_path=ItemInterpolation("%(data_dir)s/"),
             rsync_extra_args=[
